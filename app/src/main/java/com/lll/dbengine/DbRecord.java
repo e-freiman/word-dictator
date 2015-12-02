@@ -1,75 +1,54 @@
 package com.lll.dbengine;
 
+import java.util.List;
+
 /**
  * Created by Freyman on 27.11.2015.
  * Represents a record in database which corresponds to link
- * between key and value (for example English phrase and Russian translation)
+ * between a key and the set of values (for example English phrase and Russian translations)
  */
 public final class DbRecord<Key, Value> {
 
-    private Key mKey;
-    private Value mValue;
-    private int mLevel, mAsked, mAnswered, mFlags;
+    private DbKey<Key> mKey;
+    private List<DbValue<Value>> mValues;
 
     //Id is set only by database through package visible constructor
     private int mId;
 
     /**
-     * Constructor for creating DbRecord manually, for example in order
+     * Constructor for creating DbRecord by the user, for example in order
      * to put it into database
+     *
      * @param key
-     * @param value
-     * @param level
+     * @param values
      */
-    public DbRecord(Key key, Value value, int level) {
+    public DbRecord(DbKey<Key> key, List<DbValue<Value>> values) {
         mKey = key;
-        mValue = value;
-        mLevel = level;
+        mValues = values;
     }
 
     /**
      * Constructor for creating a record when it is returned from database
+     *
      * @param id
      * @param key
-     * @param value
-     * @param level
-     * @param asked
-     * @param answered
+     * @param values
      */
-    DbRecord(int id, Key key, Value value, int level, int asked, int answered) {
+    DbRecord(int id, DbKey<Key> key, List<DbValue<Value>> values) {
         mId = id;
         mKey = key;
-        mValue = value;
-        mLevel = level;
-        mAsked = asked;
-        mAnswered = answered;
+        mValues = values;
+    }
+
+    public DbKey<Key> getKey() {
+        return mKey;
+    }
+
+    public List<DbValue<Value>> getValues() {
+        return mValues;
     }
 
     public int getId() {
         return mId;
-    }
-
-    public int getAsked() {
-        return mAsked;
-    }
-
-    public Key getKey() {
-        return mKey;
-    }
-
-    public Value getValue() {
-        return mValue;
-    }
-
-    public int getLevel() {
-        return mLevel;
-    }
-
-    public int getAnswered() {
-        return mAnswered;
-    }
-
-    public int getFlags() {
-        return mFlags;
     }
 }

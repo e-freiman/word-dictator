@@ -8,12 +8,22 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.lll.dbengine.DbEngine;
 import com.lll.dbengine.DbEngineImpl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import rx.Observable;
 
 public class MainActivity extends AppCompatActivity {
 
+    private <T extends Number> void f(List<T> x) {
+        Toast.makeText(getApplicationContext(), "Hi", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        f(new ArrayList<Number>());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -24,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         RxView.clicks(findViewById(R.id.dbtest_button)).subscribe(notification -> {
-            DbEngine<String, String> engine = new DbEngineImpl();
+            DbEngine<String, String> engine = new DbEngineImpl(getApplicationContext());
             engine.createEmpty();
         });
     }

@@ -13,11 +13,7 @@ public interface DbEngine<Key, Value> {
     void createEmpty();
 
     void addRecord(DbRecord<Key, Value> dbRecord);
-    void addJSON(String filename);
-
-    void setFlags(int id, int flags);
-    void incAsked(int id);
-    void incAnswered(int id);
-
+    void updateRecord(DbRecord<Key, Value> dbRecord);
     Observable<List<DbRecord<Key, Value>>> getRecords(String sqlQuery);
+    void addJSON(String filename);
 }
