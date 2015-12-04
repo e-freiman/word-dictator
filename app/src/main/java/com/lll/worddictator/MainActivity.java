@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         RxView.clicks(findViewById(R.id.dbtest_button)).subscribe(notification -> {
             DbEngine<String, String> engine = new DbEngineImpl(getApplicationContext());
-            engine.createEmpty();
+            engine.addRecord(null);
         });
     }
 }

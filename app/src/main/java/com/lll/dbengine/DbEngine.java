@@ -10,9 +10,17 @@ import rx.Observable;
  * Any work with database goes through it
  */
 public interface DbEngine<Key, Value> {
-    void createEmpty();
+    void clean();
+    void close();
 
-    void addRecord(DbRecord<Key, Value> dbRecord);
+    /**
+     *
+     * @param dbRecord record to add
+     * @return true if value was added successfully, false if the record includes
+     * link between key and value that already present in the database or some other
+     * problems
+     */
+    boolean addRecord(DbRecord<Key, Value> dbRecord);
     void updateRecord(DbRecord<Key, Value> dbRecord);
     Observable<List<DbRecord<Key, Value>>> getRecords(String sqlQuery);
     void addJSON(String filename);
