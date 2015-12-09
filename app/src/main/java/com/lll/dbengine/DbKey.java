@@ -12,7 +12,7 @@ public class DbKey<T> {
         mLevel = level;
     }
 
-    public T getKey() {
+    public T get() {
         return mKey;
     }
 

@@ -2,11 +2,11 @@ package com.lll.dbengine;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import java.util.List;
 
@@ -82,33 +82,106 @@ public class DbEngineImpl extends SQLiteOpenHelper implements BaseColumns, DbEng
         onCreate(db);
     }
 
-
-    @Override
-    public boolean addRecord(DbRecord<String, String> dbRecord) {
+    private long getKeyId(DbKey<String> key) {
         SQLiteDatabase db = getReadableDatabase();
 
-        //Searching if key is in table_key already, add if necessary
-        //int id_key;
+        Cursor cursor = db.query(TABLE_KEYS,
+                new String[]{BaseColumns._ID},
+                "WHERE " + TABLE_KEYS_TEXT + "=?",
+                new String[]{key.get()},
+                null, null, null, null);
+
+        long id_key;
+        if (cursor.getCount() == 0) {
+            ContentValues newValue = new ContentValues();
+            newValue.put(TABLE_KEYS_TEXT, key.get());
+            newValue.put(TABLE_KEYS_LEVEL, key.getLevel());
+            id_key = db.insert(TABLE_KEYS, null, newValue);
+        } else {
+            if (cursor.getCount() > 1) {
+                throw new IllegalStateException(TABLE_KEYS + " contains more than one instance of '" + key.get() + "' word");
+            }
+
+            id_key = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+        }
+
+        if (id_key < 0) {
+            throw new SQLException("The key '" + key.get() + "' wasn't added into " + TABLE_KEYS);
+        }
+
+        return id_key;
+    }
+
+    private long getValueId(DbValue<String> value) {
+        SQLiteDatabase db = getReadableDatabase();
+        long valueId;
+
+        Cursor cursor = db.query(TABLE_VALUES,
+                new String[]{BaseColumns._ID},
+                "WHERE " + TABLE_VALUES_TEXT + "=?",
+                new String[]{value.get()},
+                null, null, null, null);
+
+        long id_value;
+        if (cursor.getCount() == 0) {
+            ContentValues newValue = new ContentValues();
+            newValue.put(TABLE_VALUES_TEXT, value.get());
+            newValue.put(TABLE_VALUES_ASKED, value.getAsked());
+            newValue.put(TABLE_VALUES_ANSWERED, value.getAnswered());
+            newValue.put(TABLE_VALUES_FLAGS, value.getFlags());
+            id_value = db.insert(TABLE_VALUES, null, newValue);
+        } else {
+            if (cursor.getCount() > 1) {
+                throw new IllegalStateException(TABLE_VALUES + " contains more that one instance of '" + value.get() + "' word");
+            }
+
+            id_value = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+        }
+
+        if (id_value < 0) {
+            throw new SQLException("The value '" + value.get() + "' wasn't added into " + TABLE_RECORDS);
+        }
+
+        return id_value;
+    }
+
+    @Override
+    public void addRecord(DbRecord<String, String> dbRecord) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        //Searching if key is already in table_key , add if necessary
+        long keyId = getKeyId(dbRecord.getKey());
 
         //Iterating through values
         for (DbValue<String> value : dbRecord.getValues()) {
 
-            //Searching value in table_values, add if necessary
-            int id_value;
+            //Searching value is already in table_values, add if necessary
+            long valueId = getValueId(value);
 
             //Checking that there isn't record with the same id_key and id_value in table_records
+            Cursor cursor = db.query(TABLE_VALUES,
+                    new String[]{BaseColumns._ID},
+                    "WHERE " + TABLE_RECORDS_ID_KEY + "=? AND " + TABLE_RECORDS_ID_VALUE + "=?",
+                    new String[]{Long.toString(keyId), Long.toString(valueId)},
+                    null, null, null, null);
+
+            if (cursor.getCount() != 0) {
+                throw new IllegalArgumentException(TABLE_RECORDS + " has already had the row that contains key = '"
+                        + dbRecord.getKey().get() + "' and value = '" + value.get() + "'. The ID of this row is "
+                        + cursor.getLong(cursor.getColumnIndex(BaseColumns._ID)));
+            }
 
             //Adding a record
-
-            //Example:
             ContentValues newValue = new ContentValues();
-            newValue.put(TABLE_KEYS_TEXT, "Cat");
-            newValue.put(TABLE_KEYS_LEVEL, "1");
-            long id = db.insert(TABLE_KEYS, null, newValue);
-            Log.d("ABC", String.format("id = %d", id));
-        }
+            newValue.put(TABLE_RECORDS_ID_KEY, keyId);
+            newValue.put(TABLE_RECORDS_ID_VALUE, valueId);
+            long id_record = db.insert(TABLE_RECORDS, null, newValue);
 
-        return true;
+            if (id_record < 0) {
+                throw new SQLException("The record with key = '" + dbRecord.getKey().get()
+                        + "' and value = '" + value.get() + "' wasn't added into " + TABLE_RECORDS);
+            }
+        }
     }
 
     @Override

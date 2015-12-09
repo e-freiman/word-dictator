@@ -14,13 +14,11 @@ public interface DbEngine<Key, Value> {
     void close();
 
     /**
-     *
-     * @param dbRecord record to add
-     * @return true if value was added successfully, false if the record includes
-     * link between key and value that already present in the database or some other
-     * problems
+     * Add a record into database. In the case of problems can throw following
+     * runtime exceptions: SQLException, IllegalStateException, IllegalArgumentException
+     * @param dbRecord
      */
-    boolean addRecord(DbRecord<Key, Value> dbRecord);
+    void addRecord(DbRecord<Key, Value> dbRecord);
     void updateRecord(DbRecord<Key, Value> dbRecord);
     Observable<List<DbRecord<Key, Value>>> getRecords(String sqlQuery);
     void addJSON(String filename);

@@ -15,7 +15,7 @@ public class DbValue<T> {
         mFlags = flags;
     }
 
-    public T getValue() {
+    public T get() {
         return mValue;
     }
 
