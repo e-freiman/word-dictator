@@ -66,6 +66,12 @@ public class DbEngineImpl extends SQLiteOpenHelper implements BaseColumns, DbEng
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public void createSample() {
+        clean();
+
+
+    }
+
     @Override
     public void close() {
         super.close();
@@ -190,7 +196,27 @@ public class DbEngineImpl extends SQLiteOpenHelper implements BaseColumns, DbEng
     }
 
     @Override
-    public Observable<List<DbRecord<String, String>>> getRecords(String sqlQuery) {
+    public Observable<DbRecord<String, String>> getRecord(String key) {
+       /* SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_KEYS,
+                new String[]{BaseColumns._ID},
+                "WHERE " + TABLE_KEYS_TEXT + "=?",
+                new String[]{key},
+                null, null, null, null);
+
+        if (cursor.getCount() > 1) {
+            throw new IllegalStateException(TABLE_KEYS + " contains more than one instance of '" + key + "' word");
+        }
+
+        if (cursor.getCount() == 0) {
+            return Observable.empty();
+        } else {
+            long id_key = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+
+
+        }*/
+
         return null;
     }
 
