@@ -66,12 +66,6 @@ public class DbEngineImpl extends SQLiteOpenHelper implements BaseColumns, DbEng
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public void createSample() {
-        clean();
-
-
-    }
-
     @Override
     public void close() {
         super.close();
@@ -197,7 +191,7 @@ public class DbEngineImpl extends SQLiteOpenHelper implements BaseColumns, DbEng
 
     @Override
     public Observable<DbRecord<String, String>> getRecord(String key) {
-       /* SQLiteDatabase db = getReadableDatabase();
+        /*SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_KEYS,
                 new String[]{BaseColumns._ID},

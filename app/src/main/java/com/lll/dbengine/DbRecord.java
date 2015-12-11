@@ -7,10 +7,10 @@ import java.util.List;
  * Represents a record in database which corresponds to link
  * between a key and the set of values (for example English phrase and Russian translations)
  */
-public final class DbRecord<Key, Value> {
+public class DbRecord<Key, Value> {
 
     private DbKey<Key> mKey;
-    private List<DbValue<Value>> mValues;
+    private List<? extends DbValue<Value>> mValues;
 
     //Id is set only by database through package visible constructor
     private int mId;
@@ -22,7 +22,7 @@ public final class DbRecord<Key, Value> {
      * @param key
      * @param values
      */
-    public DbRecord(DbKey<Key> key, List<DbValue<Value>> values) {
+    public DbRecord(DbKey<Key> key, List<? extends DbValue<Value>> values) {
         mKey = key;
         mValues = values;
     }
@@ -44,7 +44,7 @@ public final class DbRecord<Key, Value> {
         return mKey;
     }
 
-    public List<DbValue<Value>> getValues() {
+    public List<? extends DbValue<Value>> getValues() {
         return mValues;
     }
 
